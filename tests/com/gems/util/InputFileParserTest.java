@@ -4,9 +4,10 @@ import static org.junit.Assert.*;
 
 import com.gems.exception.InvalidInputFileException;
 import org.junit.Test;
-import org.junit.experimental.ParallelComputer;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -17,12 +18,21 @@ public class InputFileParserTest {
     @Test
     public void testLoadNoneExistFile() {
         boolean expectedExceptionThrown = false;
+        ArrayList<String> resources = null;
         try {
-            InputFileParser.load("foobar.txt");
-        } catch (FileNotFoundException e) {
-            expectedExceptionThrown = true;
-        } catch (InvalidInputFileException e) {
+            Method method = Class.forName("com.gems.util.InputFile").getDeclaredMethod("load", String.class);
+            method.setAccessible(true);
+            resources = (ArrayList<String>) method.invoke(null, "resources/foo.txt");
+        } catch (ClassNotFoundException x) {
 
+        } catch (IllegalAccessException x) {
+
+        } catch (NoSuchMethodException e) {
+
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof FileNotFoundException) {
+                expectedExceptionThrown = true;
+            }
         }
 
         assertTrue(expectedExceptionThrown);
@@ -33,23 +43,19 @@ public class InputFileParserTest {
         boolean expectedExceptionThrown = false;
         ArrayList<String> resources = null;
         try {
-            resources = InputFileParser.load("resources/testfile.txt");
-        } catch (InvalidInputFileException e) {
-            expectedExceptionThrown = true;
-        } catch (FileNotFoundException e) {
-            expectedExceptionThrown = true;
+            Method method = Class.forName("com.gems.util.InputFile").getDeclaredMethod("load", String.class);
+            method.setAccessible(true);
+            resources = (ArrayList<String>) method.invoke(null, "resources/testfile.txt");
+        } catch (ClassNotFoundException x) {
+
+        } catch (IllegalAccessException x) {
+            
+        } catch (NoSuchMethodException e) {
+
+        } catch (InvocationTargetException e) {
+
         }
 
         assertTrue(!resources.isEmpty());
-    }
-
-    @Test
-    public void testResourceValidator() {
-        assertTrue(InputFileParser.validateResource("http://test.com/foo"));
-    }
-
-    @Test
-    public void testParser() {
-        assertTrue(InputFileParser.validateResource("http://test.com/foo"));
     }
 }
