@@ -2,7 +2,9 @@ package com.gems.util;
 
 import static org.junit.Assert.*;
 
+import com.gems.URLList;
 import com.gems.exception.InvalidInputFileException;
+import com.sun.tools.doclets.internal.toolkit.util.DocFinder;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -49,7 +51,7 @@ public class InputFileParserTest {
         } catch (ClassNotFoundException x) {
 
         } catch (IllegalAccessException x) {
-            
+
         } catch (NoSuchMethodException e) {
 
         } catch (InvocationTargetException e) {
@@ -57,5 +59,12 @@ public class InputFileParserTest {
         }
 
         assertTrue(!resources.isEmpty());
+        assertTrue(resources.size() == 3);
+    }
+
+    @Test
+    public void testParser() throws FileNotFoundException, InvalidInputFileException {
+        URLList urlList = InputFile.getURLList("resources/testfile.txt");
+        assertTrue(urlList.size() == 2); //make sure the duplicate is removed
     }
 }

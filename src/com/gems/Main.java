@@ -5,6 +5,7 @@ import com.gems.exception.InvalidInputFileException;
 import com.gems.exception.InvalidUrlException;
 import com.gems.protocol.StreamHandlerFactory;
 import com.gems.util.InputFile;
+import com.gems.util.ProgressIndicator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,6 +44,8 @@ public class Main {
         //https://docs.oracle.com/javase/7/docs/api/java/net/URL.html
         URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
 
+        ProgressList progressList = new ProgressList();
+
         //iterate through collection (single thread mode first)
         for (URL url : urlList) {
             InputStream inputStream = null;
@@ -50,6 +53,8 @@ public class Main {
             try {
                 URLConnection con = url.openConnection();
                 inputStream = con.getInputStream();
+                Progress progress = new Progress(url.getFile(), "pending");
+                progressList.put(url.getFile(), progress);
 
                 //TODO: write to tempfile and move when done
                 fileOutputStream = new FileOutputStream("resources/" + url.getFile());
@@ -59,6 +64,8 @@ public class Main {
 
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     fileOutputStream.write(buffer, 0, bytesRead);
+                    progress.status = "downloading...";
+                    ProgressIndicator.drawProgress(progressList);
                 }
 
             } catch (IOException e) {

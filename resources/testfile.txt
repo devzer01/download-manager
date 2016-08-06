@@ -1,1 +1,3 @@
 http://www.slbeat.com/index.html
+http://www.slbeat.com/index.html
+http://www.slbeat.com/foo.html
