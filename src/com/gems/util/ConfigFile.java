@@ -13,28 +13,38 @@ public class ConfigFile {
 
     private static String defaultConfig = "resources/config.ini";
 
+    private static ConfigFile configFile = null;
+
     private Preferences prefs = null;
 
     private ConfigFile(Preferences prefs)
     {
+
         this.prefs = prefs;
     }
 
     public String getDownloadFolder()
     {
+
         return this.prefs.node("main").get("download_path", null);
     }
 
     public static ConfigFile parse(String configFile) throws IOException
     {
-        Ini ini = null;
-        try {
-            ini = new Ini(new File(configFile));
-        } catch (IOException e) {
-            ini = new Ini(new File(ConfigFile.defaultConfig));
+        if (ConfigFile.configFile == null) {
+            if (configFile == null) {
+                configFile = ConfigFile.defaultConfig;
+            }
+            Ini ini = null;
+            try {
+                ini = new Ini(new File(configFile));
+            } catch (IOException e) {
+                //do something here
+            }
+            ConfigFile.configFile = new ConfigFile(new IniPreferences(ini));
         }
 
-        return new ConfigFile(new IniPreferences(ini));
+        return ConfigFile.configFile;
     }
 
 }

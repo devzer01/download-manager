@@ -6,6 +6,7 @@ import java.net.URL;
 /**
  * Created by nayana on 8/5/16.
  */
-public class URLList extends HashSet<URL>{
+public class DownloadList extends HashSet<DownloadableFile>
+{
 
 }

@@ -9,7 +9,13 @@ import java.net.URLStreamHandler;
  */
 public class SftpURLStreamHandler extends URLStreamHandler {
     @Override
-    protected URLConnection openConnection(URL u) throws IOException {
-        return null;
+    protected URLConnection openConnection(URL url) throws IOException {
+        return new SftpURLConnection(url);
+    }
+
+    @Override
+    protected int getDefaultPort()
+    {
+        return 22;
     }
 }

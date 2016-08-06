@@ -1,17 +1,12 @@
 package com.gems;
 
-import com.gems.exception.AdapterNotFoundException;
 import com.gems.exception.InvalidInputFileException;
-import com.gems.exception.InvalidUrlException;
 import com.gems.protocol.StreamHandlerFactory;
+import com.gems.util.ConfigFile;
 import com.gems.util.InputFile;
-import com.gems.util.ProgressIndicator;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URLConnection;
-import java.io.InputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 
 
@@ -27,15 +22,20 @@ public class Main {
         System.out.println(args[0]);
 
 
-        URLList urlList = null;
+        DownloadList downloadList = null;
+        ConfigFile configFile = null;
         try {
-            urlList = InputFile.getURLList("resources/" + args[0]);
+            downloadList = InputFile.getURLList("resources/" + args[0]);
+            configFile = ConfigFile.parse(null);
         } catch (InvalidInputFileException e) {
             //throw error if input file not valid
             System.out.println("input file format not recognized");
             System.exit(1);
         } catch (FileNotFoundException e) {
             System.out.println("input file format not recognized");
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("default config file not found");
             System.exit(1);
         }
 
@@ -44,42 +44,8 @@ public class Main {
         //https://docs.oracle.com/javase/7/docs/api/java/net/URL.html
         URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
 
-        ProgressList progressList = new ProgressList();
-
-        //iterate through collection (single thread mode first)
-        for (URL url : urlList) {
-            InputStream inputStream = null;
-            FileOutputStream fileOutputStream = null;
-            try {
-                URLConnection con = url.openConnection();
-                inputStream = con.getInputStream();
-                Progress progress = new Progress(url.getFile(), "pending");
-                progressList.put(url.getFile(), progress);
-
-                //TODO: write to tempfile and move when done
-                fileOutputStream = new FileOutputStream("resources/" + url.getFile());
-
-                int bytesRead = -1;
-                byte[] buffer = new byte[4096];
-
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    fileOutputStream.write(buffer, 0, bytesRead);
-                    progress.status = "downloading...";
-                    ProgressIndicator.drawProgress(progressList);
-                }
-
-            } catch (IOException e) {
-
-            } finally {
-                try {
-                    inputStream.close();
-                    fileOutputStream.close();
-                } catch (IOException e) {
-
-                }
-            }
-        }
-
+        DownloadManager downloadManager = new DownloadManager(downloadList, configFile.getDownloadFolder());
+        downloadManager.download();
 
         //multi thread mode
 

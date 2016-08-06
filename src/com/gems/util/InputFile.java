@@ -1,6 +1,8 @@
 package com.gems.util;
 
-import com.gems.URLList;
+import com.gems.DownloadList;
+import com.gems.DownloadableFile;
+import com.gems.Progress;
 import com.gems.exception.InvalidInputFileException;
 
 import java.io.File;
@@ -15,7 +17,7 @@ import java.util.Scanner;
  */
 public class InputFile
 {
-    public static URLList getURLList(String filename) throws InvalidInputFileException, FileNotFoundException
+    public static DownloadList getURLList(String filename) throws InvalidInputFileException, FileNotFoundException
     {
         return InputFile.parse(InputFile.load(filename));
     }
@@ -46,24 +48,24 @@ public class InputFile
      * @return
      * @throws InvalidInputFileException
      */
-    private static URLList parse(ArrayList<String> resources) throws InvalidInputFileException
+    private static DownloadList parse(ArrayList<String> resources) throws InvalidInputFileException
     {
-        URLList urlList = new URLList();
+        DownloadList downloadList = new DownloadList();
         for (String resource : resources) {
             try {
-                urlList.add(new URL(resource));
+                downloadList.add(new DownloadableFile(new URL(resource), new Progress("initialized")));
             } catch (MalformedURLException e) {
                 System.out.println("invalid url " + resource);
             }
         }
 
         //if the collection is empty then we have an invalid file
-        if (urlList.isEmpty()) {
+        if (downloadList.isEmpty()) {
             throw new InvalidInputFileException();
         }
         //open file read line at a time, send through validateResource
         //on error print invalid line and throw an exception
-        return urlList;
+        return downloadList;
     }
 
 
