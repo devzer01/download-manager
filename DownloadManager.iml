@@ -31,10 +31,6 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Maven: com.github.tomas-langer:chalk:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.hawtjni:hawtjni-runtime:1.11" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.jansi:jansi-native:1.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.fusesource.jansi:jansi-native:windows32:1.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.fusesource.jansi:jansi-native:windows64:1.5" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

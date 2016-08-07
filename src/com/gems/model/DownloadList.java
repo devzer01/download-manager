@@ -1,4 +1,4 @@
-package com.gems.util;
+package com.gems.model;
 
 import java.util.HashMap;
 

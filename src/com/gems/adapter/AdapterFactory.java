@@ -1,16 +1,16 @@
 package com.gems.adapter;
 
+import java.net.URL;
 /**
- * Created by nayan on 8/6/16.
+ * Created by nayana on 8/6/16.
  */
 public class AdapterFactory
 {
-    public static Adapter getAdapter(String protocol)
+    public static Adapter getAdapter(URL url)
     {
-        if (protocol.equals("http")) {
-            return new HttpAdapter();
-        } else if (protocol.equals("ftp")) {
-            return new FtpAdapter();
+        String protocol = url.getProtocol();
+        if (protocol.equals("http") || protocol.equals("ftp") || protocol.equals("sftp")) {
+            return new GenericAdapter(url);
         }
         return null;
     }

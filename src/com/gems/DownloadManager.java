@@ -2,9 +2,9 @@ package com.gems;
 
 import com.gems.ui.ProgressIndicator;
 import com.gems.ui.formatter.BasicFormatter;
-import com.gems.util.DownloadList;
-import com.gems.util.DownloadableFile;
-import com.gems.util.Progress;
+import com.gems.model.DownloadList;
+import com.gems.model.DownloadableFile;
+import com.gems.util.ConfigFile;
 import com.gems.worker.Downloader;
 
 import java.util.Iterator;
@@ -18,32 +18,28 @@ import java.util.concurrent.Executors;
 public class DownloadManager {
     private DownloadList downloadList;
 
-    private String downloadFolder;
+    private ConfigFile configFile;
 
     private ProgressIndicator progressIndicator;
 
-    public DownloadManager() {
-
+    public DownloadManager(DownloadList downloadList, ConfigFile configFile, ProgressIndicator progressIndicator) {
+        this.downloadList = downloadList;
+        this.configFile = configFile;
+        this.progressIndicator = progressIndicator;
     }
 
-    public DownloadManager(DownloadList downloadList, String downloadFolder) {
-        this.setDownloadList(downloadList);
-        this.setDownloadFolder(downloadFolder);
-    }
-
-    public void download()
+    public void startDownload()
     {
-        progressIndicator.setFormatter(new BasicFormatter());
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newFixedThreadPool(configFile.getThreadCount());
 
         //iterate through collection (single thread mode first)
         Iterator iterator = getDownloadList().entrySet().iterator();
+
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
             DownloadableFile downloadableFile = (DownloadableFile) pair.getValue();
-            Downloader downloader = new Downloader(downloadableFile);
-            downloader.setProgressIndicator(progressIndicator);
-            downloader.setDownloadFolder(getDownloadFolder());
+
+            Downloader downloader = new Downloader(downloadableFile, progressIndicator, configFile);
             executor.execute(downloader);
         }
         executor.shutdown();
@@ -56,25 +52,4 @@ public class DownloadManager {
         return downloadList;
     }
 
-    public void setDownloadList(DownloadList downloadList) {
-        this.downloadList = downloadList;
-    }
-
-    public String getDownloadFolder() {
-        return downloadFolder;
-    }
-
-    public void setDownloadFolder(String downloadFolder) {
-
-        this.downloadFolder = downloadFolder;
-    }
-
-    public ProgressIndicator getProgressIndicator() {
-        return progressIndicator;
-    }
-
-    public void setProgressIndicator(ProgressIndicator progressIndicator) {
-        progressIndicator.setDownloadList(downloadList);
-        this.progressIndicator = progressIndicator;
-    }
 }

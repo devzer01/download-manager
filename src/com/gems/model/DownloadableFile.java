@@ -1,4 +1,4 @@
-package com.gems.util;
+package com.gems.model;
 
 import java.net.URL;
 
@@ -13,23 +13,16 @@ public class DownloadableFile
 
     public DownloadableFile(URL url, Progress progress)
     {
-        this.setUrl(url);
-        this.setProgress(progress);
+        this.url = url;
+        this.progress = progress;
     }
 
     public URL getUrl() {
         return url;
     }
 
-    public void setUrl(URL url) {
-        this.url = url;
-    }
-
     public Progress getProgress() {
         return progress;
     }
 
-    public void setProgress(Progress progress) {
-        this.progress = progress;
-    }
 }

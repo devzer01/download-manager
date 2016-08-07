@@ -1,9 +1,9 @@
 package com.gems.ui;
 
-import com.gems.util.DownloadList;
-import com.gems.util.DownloadableFile;
+import com.gems.model.DownloadList;
+import com.gems.model.DownloadableFile;
 import java.net.URL;
-import com.gems.util.Progress;
+import com.gems.model.Progress;
 import com.gems.event.ProgressListener;
 import com.gems.ui.formatter.Formatter;
 import java.util.Iterator;
@@ -22,9 +22,10 @@ public class ProgressIndicator implements ProgressListener {
 
     private boolean drawOnce = false;
 
-    public ProgressIndicator()
+    public ProgressIndicator(DownloadList downloadList, Formatter formatter)
     {
-
+        this.formatter = formatter;
+        this.downloadList = downloadList;
     }
 
     public void setFormatter(Formatter formatter)
@@ -41,8 +42,8 @@ public class ProgressIndicator implements ProgressListener {
     //clear display and show again
     public void draw()
     {
-        Iterator iterator = getDownloadList().entrySet().iterator();
-        if (drawOnce) System.out.print(Ansi.cursorUp(getDownloadList().entrySet().size())); //move cursor up
+        Iterator iterator = downloadList.entrySet().iterator();
+        if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry)iterator.next();
             DownloadableFile downloadableFile = (DownloadableFile) pair.getValue();
@@ -52,13 +53,5 @@ public class ProgressIndicator implements ProgressListener {
             System.out.print(formatter.format(url, progress));
         }
         drawOnce = true;
-    }
-
-    public DownloadList getDownloadList() {
-        return downloadList;
-    }
-
-    public void setDownloadList(DownloadList downloadList) {
-        this.downloadList = downloadList;
     }
 }

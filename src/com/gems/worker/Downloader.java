@@ -1,9 +1,10 @@
 package com.gems.worker;
 
-import com.gems.util.DownloadableFile;
+import com.gems.model.DownloadableFile;
 import com.gems.adapter.Adapter;
 import com.gems.adapter.AdapterFactory;
 import com.gems.ui.ProgressIndicator;
+import com.gems.util.ConfigFile;
 
 import java.io.IOException;
 import java.lang.Runnable;
@@ -16,28 +17,20 @@ public class Downloader implements Runnable
 
     protected ProgressIndicator progressIndicator;
 
-    protected String downloadFolder;
+    protected ConfigFile configFile;
 
-    public Downloader(DownloadableFile downloadableFile)
+    public Downloader(DownloadableFile downloadableFile, ProgressIndicator progressIndicator, ConfigFile configFile)
     {
+        this.progressIndicator = progressIndicator;
+        this.configFile = configFile;
         this.downloadableFile = downloadableFile;
     }
 
-    public void setProgressIndicator(ProgressIndicator progressIndicator)
-    {
-        this.progressIndicator = progressIndicator;
-    }
-
-    public void setDownloadFolder(String downloadFolder)
-    {
-        this.downloadFolder = downloadFolder;
-    }
-
     public void run() {
-        Adapter adapter = AdapterFactory.getAdapter(downloadableFile.getUrl().getProtocol());
+        Adapter adapter = AdapterFactory.getAdapter(downloadableFile.getUrl());
         adapter.setOnProgressListener(progressIndicator);
         try {
-            adapter.download(downloadableFile, downloadFolder);
+            adapter.download(downloadableFile.getProgress(), configFile.getDownloadFolder());
         } catch (IOException e) {
 
         }
