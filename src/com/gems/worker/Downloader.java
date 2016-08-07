@@ -30,7 +30,7 @@ public class Downloader implements Runnable
         Adapter adapter = AdapterFactory.getAdapter(task.getUrl());
         adapter.setOnProgressListener(progressIndicator);
         try {
-            adapter.download(task.getProgress(), configFile.getDownloadFolder());
+            adapter.download(task.getProgress(), configFile);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
