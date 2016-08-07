@@ -9,6 +9,8 @@ public class AdapterFactory
     {
         if (protocol.equals("http")) {
             return new HttpAdapter();
+        } else if (protocol.equals("ftp")) {
+            return new FtpAdapter();
         }
         return null;
     }

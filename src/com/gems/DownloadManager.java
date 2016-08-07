@@ -1,12 +1,15 @@
 package com.gems;
 
-import com.gems.adapter.Adapter;
-import com.gems.adapter.AdapterFactory;
 import com.gems.ui.ProgressIndicator;
 import com.gems.ui.formatter.BasicFormatter;
+import com.gems.util.DownloadList;
+import com.gems.util.DownloadableFile;
+import com.gems.worker.Downloader;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by nayana on 8/6/16.
@@ -28,19 +31,22 @@ public class DownloadManager
 
         ProgressIndicator progressIndicator = new ProgressIndicator(downloadList);
         progressIndicator.setFormatter(new BasicFormatter());
-
-        System.out.println("download folder - " + downloadFolder);
+        ExecutorService executor = Executors.newFixedThreadPool(5);
 
         //iterate through collection (single thread mode first)
-        for (DownloadableFile downloadbleFile : downloadList) {
-            Adapter adapter = AdapterFactory.getAdapter(downloadbleFile.url.getProtocol());
-            adapter.setOnProgressListener(progressIndicator);
-            try {
-                adapter.download(downloadbleFile, downloadFolder);
-            } catch (IOException e) {
-
-            }
+        Iterator iterator = downloadList.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry pair = (Map.Entry)iterator.next();
+            DownloadableFile downloadbleFile = (DownloadableFile) pair.getValue();
+            Downloader downloader = new Downloader(downloadbleFile);
+            downloader.setProgressIndicator(progressIndicator);
+            downloader.setDownloadFolder(downloadFolder);
+            executor.execute(downloader);
         }
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+        }
+        System.out.println("Finished all threads");
     }
 
     public void setDownloadFolder(String downloadFolder) {

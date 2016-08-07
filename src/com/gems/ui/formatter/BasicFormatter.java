@@ -1,6 +1,6 @@
 package com.gems.ui.formatter;
 
-import com.gems.Progress;
+import com.gems.util.Progress;
 
 import java.net.URL;
 

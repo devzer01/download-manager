@@ -1,13 +1,11 @@
 package com.gems.adapter;
 
-import com.gems.DownloadableFile;
-import com.gems.Progress;
+import com.gems.util.DownloadableFile;
 import com.gems.event.ProgressListener;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
@@ -35,37 +33,34 @@ public class GenericAdapter implements Adapter
         InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
         try {
-            //this logic needs to be moved to some sort of interface
-            //so that we can handle both single and multi connection protocols
-            URLConnection con = downloadableFile.url.openConnection();
-            System.out.println(con.getClass().getName());
+            URLConnection con = downloadableFile.getUrl().openConnection();
             inputStream = con.getInputStream();
 
             //TODO: write to tempfile and move when done
-            fileOutputStream = new FileOutputStream(downloadFolder + "/" + downloadableFile.url.getFile());
+            fileOutputStream = new FileOutputStream(downloadFolder + "/" + downloadableFile.getUrl().getFile());
 
             int bytesRead = -1;
             byte[] buffer = new byte[4096];
 
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 fileOutputStream.write(buffer, 0, bytesRead);
-                downloadableFile.progress.status = "downloading...";
+                downloadableFile.getProgress().status = "downloading...";
                 this.onProgress();
             }
 
-            downloadableFile.progress.status = "finished";
+            downloadableFile.getProgress().status = "finished";
 
         } catch (IOException e) {
-            downloadableFile.progress.status = "error";
+            downloadableFile.getProgress().status = "error";
         } finally {
             try {
                 inputStream.close();
                 fileOutputStream.close();
                 this.onProgress();
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
             } catch (java.lang.NullPointerException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
             }
         }
     }

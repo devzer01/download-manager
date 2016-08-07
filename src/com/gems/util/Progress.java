@@ -1,4 +1,4 @@
-package com.gems;
+package com.gems.util;
 
 /**
  * Created by nayana on 8/6/16.

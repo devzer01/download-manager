@@ -2,7 +2,6 @@ package com.gems.util;
 
 import static org.junit.Assert.*;
 
-import com.gems.DownloadList;
 import com.gems.exception.InvalidInputFileException;
 import org.junit.Test;
 

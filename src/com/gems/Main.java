@@ -3,6 +3,7 @@ package com.gems;
 import com.gems.exception.InvalidInputFileException;
 import com.gems.protocol.StreamHandlerFactory;
 import com.gems.util.ConfigFile;
+import com.gems.util.DownloadList;
 import com.gems.util.InputFile;
 
 import java.io.FileNotFoundException;

@@ -1,8 +1,5 @@
 package com.gems.util;
 
-import com.gems.DownloadList;
-import com.gems.DownloadableFile;
-import com.gems.Progress;
 import com.gems.exception.InvalidInputFileException;
 
 import java.io.File;
@@ -53,7 +50,7 @@ public class InputFile
         DownloadList downloadList = new DownloadList();
         for (String resource : resources) {
             try {
-                downloadList.add(new DownloadableFile(new URL(resource), new Progress("initialized")));
+                downloadList.put(resource, new DownloadableFile(new URL(resource), new Progress("initialized")));
             } catch (MalformedURLException e) {
                 System.out.println("invalid url " + resource);
             }
