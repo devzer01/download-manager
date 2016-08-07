@@ -1,28 +1,16 @@
 package com.gems.adapter;
 
-import java.net.URL;
-import org.apache.commons.validator.routines.DomainValidator;
+import com.gems.util.DownloadableFile;
+import com.gems.event.ProgressListener;
+
+import java.io.IOException;
 
 /**
- * Created by nayana on 8/5/16.
+ * Created by nayan on 8/6/16.
  */
-abstract public class Adapter
+public interface Adapter
 {
+    void download(DownloadableFile downloadableFile, String downloadFolder) throws IOException;
 
-    URL url = null;
-
-    public Adapter(URL url)
-    {
-        this.url = url;
-    }
-
-    protected boolean validateHost()
-    {
-        DomainValidator domainValidator = DomainValidator.getInstance();
-        return (domainValidator.isValid(url.getHost()));
-    }
-
-    abstract public boolean validate();
-
-    abstract public void download();
+    void setOnProgressListener(ProgressListener progressListener);
 }

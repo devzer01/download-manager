@@ -1,13 +1,13 @@
 package com.gems;
 
-import com.gems.exception.AdapterNotFoundException;
 import com.gems.exception.InvalidInputFileException;
-import com.gems.exception.InvalidUrlException;
-import com.gems.util.InputFileParser;
-import com.gems.adapter.Adapter;
+import com.gems.protocol.StreamHandlerFactory;
+import com.gems.util.ConfigFile;
+import com.gems.util.DownloadList;
+import com.gems.util.InputFile;
 
-import java.util.ArrayList;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 
 
@@ -20,12 +20,14 @@ public class Main {
             System.exit(1); //return with status 1 to indicate error
         }
 
+        System.out.println(args[0]);
 
-        URLList urlList = null;
+
+        DownloadList downloadList = null;
+        ConfigFile configFile = null;
         try {
-            ArrayList<String> resources = InputFileParser.load(args[0]);
-            urlList = InputFileParser.parse(resources);
-
+            downloadList = InputFile.getURLList("resources/" + args[0]);
+            configFile = ConfigFile.parse(null);
         } catch (InvalidInputFileException e) {
             //throw error if input file not valid
             System.out.println("input file format not recognized");
@@ -33,27 +35,18 @@ public class Main {
         } catch (FileNotFoundException e) {
             System.out.println("input file format not recognized");
             System.exit(1);
+        } catch (IOException e) {
+            System.out.println("default config file not found");
+            System.exit(1);
         }
 
         //rather than reinventing the wheel
         // i decided to use URLStreamHandlerFactory after reading the documentation here
         //https://docs.oracle.com/javase/7/docs/api/java/net/URL.html
-        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory());
+        URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
 
-        //iterate through collection (single thread mode first)
-        for (URL u : urlList) {
-            Adapter adapter = null;
-            try {
-                adapter = AdapterFactory.getAdapter(u);
-                adapter.validate();
-            } catch (InvalidUrlException|AdapterNotFoundException e) {
-                System.out.println("input file format not recognized");
-            }
-
-            adapter.download();
-
-        }
-
+        DownloadManager downloadManager = new DownloadManager(downloadList, configFile.getDownloadFolder());
+        downloadManager.download();
 
         //multi thread mode
 
