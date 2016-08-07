@@ -1,9 +1,9 @@
 package com.gems;
 
 import com.gems.ui.ProgressIndicator;
-import com.gems.ui.formatter.BasicFormatter;
+import com.gems.model.Job;
 import com.gems.model.DownloadList;
-import com.gems.model.DownloadableFile;
+import com.gems.model.Task;
 import com.gems.util.ConfigFile;
 import com.gems.worker.Downloader;
 
@@ -16,16 +16,18 @@ import java.util.concurrent.Executors;
  * Created by nayana on 8/6/16.
  */
 public class DownloadManager {
+
     private DownloadList downloadList;
 
     private ConfigFile configFile;
 
     private ProgressIndicator progressIndicator;
 
-    public DownloadManager(DownloadList downloadList, ConfigFile configFile, ProgressIndicator progressIndicator) {
-        this.downloadList = downloadList;
+    public DownloadManager(Job job, ConfigFile configFile) {
+        this.downloadList = job.getDownloadList();
         this.configFile = configFile;
-        this.progressIndicator = progressIndicator;
+        this.progressIndicator = job.getProgressIndicator();
+        this.progressIndicator.setDownloadManager(this);
     }
 
     public void startDownload()
@@ -33,13 +35,13 @@ public class DownloadManager {
         ExecutorService executor = Executors.newFixedThreadPool(configFile.getThreadCount());
 
         //iterate through collection (single thread mode first)
-        Iterator iterator = getDownloadList().entrySet().iterator();
+        Iterator iterator = downloadList.entrySet().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
-            DownloadableFile downloadableFile = (DownloadableFile) pair.getValue();
+            Task task = (Task) pair.getValue();
 
-            Downloader downloader = new Downloader(downloadableFile, progressIndicator, configFile);
+            Downloader downloader = new Downloader(task, progressIndicator, configFile);
             executor.execute(downloader);
         }
         executor.shutdown();
@@ -51,5 +53,4 @@ public class DownloadManager {
     public DownloadList getDownloadList() {
         return downloadList;
     }
-
 }

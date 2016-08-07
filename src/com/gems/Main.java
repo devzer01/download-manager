@@ -7,6 +7,7 @@ import com.gems.util.ConfigFile;
 import com.gems.model.DownloadList;
 import com.gems.util.InputFile;
 import com.gems.ui.formatter.Formatter;
+import com.gems.model.Job;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +42,8 @@ public class Main {
         }
 
         Formatter formatter = getFormatter(configFile);
-        ProgressIndicator progressIndicator = new ProgressIndicator(downloadList, formatter);
+        ProgressIndicator progressIndicator = new ProgressIndicator(formatter);
+        Job job = new Job(downloadList, progressIndicator);
 
         //rather than reinventing the wheel
         // i decided to use URLStreamHandlerFactory after reading the documentation here

@@ -1,7 +1,8 @@
 package com.gems.ui;
 
+import com.gems.DownloadManager;
 import com.gems.model.DownloadList;
-import com.gems.model.DownloadableFile;
+import com.gems.model.Task;
 import java.net.URL;
 import com.gems.model.Progress;
 import com.gems.event.ProgressListener;
@@ -16,21 +17,20 @@ import com.github.tomaslanger.chalk.Ansi;
  */
 public class ProgressIndicator implements ProgressListener {
 
-    private DownloadList downloadList;
+    private DownloadManager downloadManager;
 
     private Formatter formatter;
 
     private boolean drawOnce = false;
 
-    public ProgressIndicator(DownloadList downloadList, Formatter formatter)
+    public ProgressIndicator(Formatter formatter)
     {
         this.formatter = formatter;
-        this.downloadList = downloadList;
     }
 
-    public void setFormatter(Formatter formatter)
+    public void setDownloadManager(DownloadManager downloadManager)
     {
-        this.formatter = formatter;
+        this.downloadManager = downloadManager;
     }
 
     public void onProgressEvent()
@@ -42,13 +42,14 @@ public class ProgressIndicator implements ProgressListener {
     //clear display and show again
     public void draw()
     {
+        DownloadList downloadList = downloadManager.getDownloadList();
         Iterator iterator = downloadList.entrySet().iterator();
         if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry)iterator.next();
-            DownloadableFile downloadableFile = (DownloadableFile) pair.getValue();
-            Progress progress = downloadableFile.getProgress();
-            URL url = downloadableFile.getUrl();
+            Task task = (Task) pair.getValue();
+            Progress progress = task.getProgress();
+            URL url = task.getUrl();
             System.out.print(Ansi.eraseLine()); //erase current line
             System.out.print(formatter.format(url, progress));
         }

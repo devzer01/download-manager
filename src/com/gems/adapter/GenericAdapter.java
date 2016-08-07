@@ -1,6 +1,5 @@
 package com.gems.adapter;
 
-import com.gems.model.DownloadableFile;
 import com.gems.event.ProgressListener;
 import com.gems.model.Progress;
 
