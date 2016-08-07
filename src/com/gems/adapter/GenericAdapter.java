@@ -48,6 +48,7 @@ public class GenericAdapter implements Adapter
             urlConnection = url.openConnection();
             inputStream = urlConnection.getInputStream();
             Path path = Paths.get(url.getFile());
+            progress.size = urlConnection.getContentLengthLong();
 
             //TODO: write to tempfile and move when done
             fileOutputStream = new FileOutputStream(downloadFolder + "/" + path.getFileName().toString());

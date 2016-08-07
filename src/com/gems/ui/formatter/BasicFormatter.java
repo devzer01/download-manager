@@ -11,6 +11,6 @@ public class BasicFormatter implements Formatter
 {
     public String format(URL url, Progress progress)
     {
-        return url.getFile() + " ----- " + progress.status + "\n";
+        return url.getFile() + " - " + progress.status + " - " + String.valueOf(progress.size).toString() + "\n";
     }
 }

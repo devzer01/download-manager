@@ -6,6 +6,8 @@ package com.gems.model;
 public class Progress {
     public String status;
 
+    public long size;
+
     public Progress (String status)
     {
         this.status = status;
