@@ -1,10 +1,12 @@
 package com.gems.worker;
 
+import com.gems.exception.AdapterNotFoundException;
 import com.gems.model.Task;
 import com.gems.adapter.Adapter;
 import com.gems.adapter.AdapterFactory;
 import com.gems.ui.ProgressIndicator;
 import com.gems.util.ConfigFile;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.Runnable;
@@ -13,6 +15,8 @@ import java.lang.Runnable;
  */
 public class Downloader implements Runnable
 {
+    protected Logger log = Logger.getLogger(Downloader.class.getName());
+
     protected Task task;
 
     protected ProgressIndicator progressIndicator;
@@ -27,12 +31,13 @@ public class Downloader implements Runnable
     }
 
     public void run() {
-        Adapter adapter = AdapterFactory.getAdapter(task.getUrl());
-        adapter.setOnProgressListener(progressIndicator);
         try {
+            Adapter adapter = AdapterFactory.getAdapter(task.getUrl());
+            adapter.setOnProgressListener(progressIndicator);
             adapter.download(task.getProgress(), configFile);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        } catch (IOException|AdapterNotFoundException e) {
+            log.warn(task.getUrl() + " - Download error");
+            task.getProgress().status = "error";
         }
     }
 }

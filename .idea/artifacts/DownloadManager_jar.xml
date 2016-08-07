@@ -1,17 +1,12 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="DownloadManager:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/DownloadManager_jar</output-path>
+  <artifact type="jar" build-on-make="true" name="DownloadManager:jar">
+    <output-path>$PROJECT_DIR$/DownloadManager_jar</output-path>
     <root id="archive" name="DownloadManager.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="library" level="project" name="lib" />
       <element id="module-output" name="DownloadManager" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/chalk-1.0.2.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/ini4j-0.5.4.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jsch-0.1.53.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jansi-native-1.5.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/hawtjni-runtime-1.11.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-validator-1.5.1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jansi-native-1.5-windows32.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jansi-native-1.5-windows64.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/dp4j-1.2-jar-with-dependencies.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -20,9 +20,10 @@ import org.apache.log4j.BasicConfigurator;
 
 public class Main {
 
+    protected static Logger log = Logger.getLogger(Main.class.getName());
+
     public static void main(String[] args) {
 
-        Logger log = Logger.getLogger(Main.class.getName());
         log.info("Starting downloader");
 
         if (args.length == 0) {
