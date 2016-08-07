@@ -6,6 +6,7 @@ import com.gems.model.DownloadList;
 import com.gems.model.Task;
 import com.gems.util.ConfigFile;
 import com.gems.worker.Downloader;
+import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -16,6 +17,8 @@ import java.util.concurrent.Executors;
  * Created by nayana on 8/6/16.
  */
 public class DownloadManager {
+
+    protected Logger log = Logger.getLogger(DownloadManager.class.getName());
 
     private DownloadList downloadList;
 
@@ -46,8 +49,9 @@ public class DownloadManager {
         }
         executor.shutdown();
         while (!executor.isTerminated()) {
+            log.debug("Waiting for threads to finish download");
         }
-        System.out.println("Finished all threads");
+
     }
 
     public DownloadList getDownloadList() {

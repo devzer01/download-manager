@@ -24,6 +24,8 @@ public class SftpURLConnection extends URLConnection {
 
     protected JSch jSch;
 
+    protected long size;
+
     protected SftpURLConnection(URL url)
     {
         super(url);
@@ -45,23 +47,22 @@ public class SftpURLConnection extends URLConnection {
         if(userInfo!=null && userInfo.length()>0) {
             String[] userPassPair = userInfo.split(":");
             username = userPassPair[0];
-            password = userPassPair[1]; //arrayOutofBoundException???
+            password = java.net.URLDecoder.decode(userPassPair[1], "UTF-8");
         }
 
 
         jSch = new JSch();
 
         try {
-            session = jSch.getSession("nayana", url.getHost(), url.getDefaultPort());
-            session.setPassword("ZaQ1#wSx");
+            session = jSch.getSession(username, url.getHost(), url.getDefaultPort());
+            session.setPassword(password);
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
             session.connect();
-            channel = session.openChannel("sftp");
-            channel.connect();
-            channelSftp = (ChannelSftp) channel;
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect();
             System.out.print("connected sftp");
 
         } catch (JSchException e) {
@@ -73,9 +74,13 @@ public class SftpURLConnection extends URLConnection {
     public void disconnect()
     {
         System.out.println("call disconnect ---");
-        channel.disconnect();
         channelSftp.disconnect();
         session.disconnect();
+    }
+
+    public long getContentLengthLong()
+    {
+        return size;
     }
 
     public InputStream getInputStream() throws IOException
@@ -94,6 +99,8 @@ public class SftpURLConnection extends URLConnection {
             String hostPath = String.join("/", pathParts);
 
             channelSftp.cd("/" + hostPath);
+            SftpATTRS sftpATTRS = channelSftp.lstat(path.getFileName().toString());
+            size = sftpATTRS.getSize();
             return new BufferedInputStream(channelSftp.get(path.getFileName().toString()));
         } catch (SftpException e) {
             System.out.println("Exception in connection handler inputstream");

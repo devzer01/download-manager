@@ -2,6 +2,7 @@ package com.gems.adapter;
 
 import com.gems.event.ProgressListener;
 import com.gems.model.Progress;
+import com.gems.util.ConfigFile;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.io.File;
+
 
 /**
  * Created by nayana on 8/6/16.
@@ -40,17 +43,19 @@ public class GenericAdapter implements Adapter
         }
     }
 
-    public void download(Progress progress, String downloadFolder) throws IOException
+    public void download(Progress progress, ConfigFile configFile) throws IOException
     {
         InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
+        Path path = Paths.get(url.getFile());
+        String tempFileName = configFile.getTempDir() + "/" + path.getFileName().toString();
         try {
+
             urlConnection = url.openConnection();
             inputStream = urlConnection.getInputStream();
-            Path path = Paths.get(url.getFile());
+            progress.size = urlConnection.getContentLengthLong();
 
-            //TODO: write to tempfile and move when done
-            fileOutputStream = new FileOutputStream(downloadFolder + "/" + path.getFileName().toString());
+            fileOutputStream = new FileOutputStream(tempFileName);
 
             int bytesRead = -1;
             byte[] buffer = new byte[4096];
@@ -63,16 +68,20 @@ public class GenericAdapter implements Adapter
 
             progress.status = "finished";
 
+
         } catch (IOException e) {
             progress.status = "error";
+
+            //delete temp file
+
         } finally {
             try {
                 inputStream.close();
                 fileOutputStream.close();
                 this.onProgress();
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            } catch (java.lang.NullPointerException e) {
+                File fileTemp = new File(tempFileName);
+                fileTemp.renameTo(new File(configFile.getDownloadFolder() + "/" + path.getFileName().toString()));
+            } catch (IOException|NullPointerException e) {
                 System.out.println(e.getMessage());
             }
         }

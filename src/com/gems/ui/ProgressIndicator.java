@@ -44,7 +44,7 @@ public class ProgressIndicator implements ProgressListener {
     {
         DownloadList downloadList = downloadManager.getDownloadList();
         Iterator iterator = downloadList.entrySet().iterator();
-        //if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
+        if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry)iterator.next();
             Task task = (Task) pair.getValue();

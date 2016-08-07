@@ -14,10 +14,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.lang.reflect.Constructor;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+
 
 public class Main {
 
+    protected static Logger log = Logger.getLogger(Main.class.getName());
+
     public static void main(String[] args) {
+
+        log.info("Starting downloader");
 
         if (args.length == 0) {
             System.out.println("please specify a input file that contains sources to startDownload");
