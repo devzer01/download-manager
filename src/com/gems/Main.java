@@ -47,7 +47,7 @@ public class Main {
         URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
 
         DownloadManager downloadManager = new DownloadManager(downloadList, configFile.getDownloadFolder());
-        downloadManager.setProgressIndicator(new ProgressIndicator(););
+        downloadManager.setProgressIndicator(new ProgressIndicator());
         downloadManager.download();
 
         //multi thread mode
