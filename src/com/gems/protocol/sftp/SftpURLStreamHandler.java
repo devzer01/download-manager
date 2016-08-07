@@ -10,7 +10,9 @@ import java.net.URLStreamHandler;
 public class SftpURLStreamHandler extends URLStreamHandler {
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
-        return new SftpURLConnection(url);
+        SftpURLConnection sftpURLConnection = new SftpURLConnection(url);
+        sftpURLConnection.connect();
+        return sftpURLConnection;
     }
 
     @Override

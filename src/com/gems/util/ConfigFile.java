@@ -1,5 +1,7 @@
 package com.gems.util;
 
+import com.sun.xml.internal.stream.Entity;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.ini4j.Ini;
 import org.ini4j.IniPreferences;
 import java.io.File;
@@ -11,40 +13,33 @@ import java.util.prefs.Preferences;
  */
 public class ConfigFile {
 
-    private static String defaultConfig = "resources/config.ini";
-
-    private static ConfigFile configFile = null;
+    private String defaultConfig = "resources/config.ini";
 
     private Preferences prefs = null;
 
-    private ConfigFile(Preferences prefs)
+    public ConfigFile() throws IOException
     {
-
-        this.prefs = prefs;
+        Ini ini = null;
+        ini = new Ini(new File(defaultConfig));
+        this.prefs = new IniPreferences(ini);
     }
 
     public String getDownloadFolder()
     {
-
         return this.prefs.node("main").get("download_path", null);
     }
 
-    public static ConfigFile parse(String configFile) throws IOException
+    public String getProgressFormatter()
     {
-        if (ConfigFile.configFile == null) {
-            if (configFile == null) {
-                configFile = ConfigFile.defaultConfig;
-            }
-            Ini ini = null;
-            try {
-                ini = new Ini(new File(configFile));
-            } catch (IOException e) {
-                //do something here
-            }
-            ConfigFile.configFile = new ConfigFile(new IniPreferences(ini));
-        }
-
-        return ConfigFile.configFile;
+        return this.prefs.node("main").get("progress_formatter", null);
     }
 
+    public String getTempDir() {
+        return this.prefs.node("main").get("temp_dir", System.getProperty("java.io.tmpdir"));
+    }
+
+    public int getThreadCount()
+    {
+        return Integer.parseInt(this.prefs.node("main").get("thread_count", String.valueOf(1)));
+    }
 }

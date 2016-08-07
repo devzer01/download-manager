@@ -1,46 +1,47 @@
 package com.gems;
 
 import com.gems.ui.ProgressIndicator;
-import com.gems.ui.formatter.BasicFormatter;
-import com.gems.util.DownloadList;
-import com.gems.util.DownloadableFile;
+import com.gems.model.Job;
+import com.gems.model.DownloadList;
+import com.gems.model.Task;
+import com.gems.util.ConfigFile;
 import com.gems.worker.Downloader;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by nayana on 8/6/16.
  */
-public class DownloadManager
-{
+public class DownloadManager {
+
     private DownloadList downloadList;
 
-    private String downloadFolder;
+    private ConfigFile configFile;
 
-    public DownloadManager(DownloadList downloadList, String downloadFolder)
-    {
-        this.downloadList = downloadList;
-        this.downloadFolder = downloadFolder;
+    private ProgressIndicator progressIndicator;
+
+    public DownloadManager(Job job, ConfigFile configFile) {
+        this.downloadList = job.getDownloadList();
+        this.configFile = configFile;
+        this.progressIndicator = job.getProgressIndicator();
+        this.progressIndicator.setDownloadManager(this);
     }
 
-    public void download()
+    public void startDownload()
     {
-
-        ProgressIndicator progressIndicator = new ProgressIndicator(downloadList);
-        progressIndicator.setFormatter(new BasicFormatter());
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newFixedThreadPool(configFile.getThreadCount());
 
         //iterate through collection (single thread mode first)
         Iterator iterator = downloadList.entrySet().iterator();
+
         while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry)iterator.next();
-            DownloadableFile downloadbleFile = (DownloadableFile) pair.getValue();
-            Downloader downloader = new Downloader(downloadbleFile);
-            downloader.setProgressIndicator(progressIndicator);
-            downloader.setDownloadFolder(downloadFolder);
+            Map.Entry pair = (Map.Entry) iterator.next();
+            Task task = (Task) pair.getValue();
+
+            Downloader downloader = new Downloader(task, progressIndicator, configFile);
             executor.execute(downloader);
         }
         executor.shutdown();
@@ -49,7 +50,7 @@ public class DownloadManager
         System.out.println("Finished all threads");
     }
 
-    public void setDownloadFolder(String downloadFolder) {
-        this.downloadFolder = downloadFolder;
+    public DownloadList getDownloadList() {
+        return downloadList;
     }
 }

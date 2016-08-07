@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * Created by nayan on 8/7/16.
  */
-public class DownloadableFileTest {
+public class TaskTest {
     @Before
     public void setUp() throws Exception {
 

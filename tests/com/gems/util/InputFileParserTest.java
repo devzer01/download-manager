@@ -3,6 +3,7 @@ package com.gems.util;
 import static org.junit.Assert.*;
 
 import com.gems.exception.InvalidInputFileException;
+import com.gems.model.DownloadList;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;

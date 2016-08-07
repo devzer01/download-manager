@@ -1,4 +1,4 @@
-package com.gems.util;
+package com.gems.model;
 
 /**
  * Created by nayana on 8/6/16.

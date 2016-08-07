@@ -1,9 +1,10 @@
 package com.gems.worker;
 
-import com.gems.util.DownloadableFile;
+import com.gems.model.Task;
 import com.gems.adapter.Adapter;
 import com.gems.adapter.AdapterFactory;
 import com.gems.ui.ProgressIndicator;
+import com.gems.util.ConfigFile;
 
 import java.io.IOException;
 import java.lang.Runnable;
@@ -12,34 +13,26 @@ import java.lang.Runnable;
  */
 public class Downloader implements Runnable
 {
-    protected DownloadableFile downloadableFile;
+    protected Task task;
 
     protected ProgressIndicator progressIndicator;
 
-    protected String downloadFolder;
+    protected ConfigFile configFile;
 
-    public Downloader(DownloadableFile downloadableFile)
-    {
-        this.downloadableFile = downloadableFile;
-    }
-
-    public void setProgressIndicator(ProgressIndicator progressIndicator)
+    public Downloader(Task task, ProgressIndicator progressIndicator, ConfigFile configFile)
     {
         this.progressIndicator = progressIndicator;
-    }
-
-    public void setDownloadFolder(String downloadFolder)
-    {
-        this.downloadFolder = downloadFolder;
+        this.configFile = configFile;
+        this.task = task;
     }
 
     public void run() {
-        Adapter adapter = AdapterFactory.getAdapter(downloadableFile.getUrl().getProtocol());
+        Adapter adapter = AdapterFactory.getAdapter(task.getUrl());
         adapter.setOnProgressListener(progressIndicator);
         try {
-            adapter.download(downloadableFile, downloadFolder);
+            adapter.download(task.getProgress(), configFile.getDownloadFolder());
         } catch (IOException e) {
-
+            System.out.println(e.getMessage());
         }
     }
 }

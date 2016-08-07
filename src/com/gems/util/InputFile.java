@@ -1,6 +1,9 @@
 package com.gems.util;
 
 import com.gems.exception.InvalidInputFileException;
+import com.gems.model.DownloadList;
+import com.gems.model.Task;
+import com.gems.model.Progress;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +17,13 @@ import java.util.Scanner;
  */
 public class InputFile
 {
-    public static DownloadList getURLList(String filename) throws InvalidInputFileException, FileNotFoundException
+    /**
+     *
+     * @param filename
+     * @return
+     * @throws InvalidInputFileException
+     */
+    public static DownloadList getURLList(String filename) throws InvalidInputFileException
     {
         return InputFile.parse(InputFile.load(filename));
     }
@@ -25,18 +34,20 @@ public class InputFile
      * @param filename
      * @return ArrayList
      * @throws InvalidInputFileException
-     * @throws FileNotFoundException
      */
-    private static ArrayList<String> load(String filename) throws InvalidInputFileException, FileNotFoundException
+    private static ArrayList<String> load(String filename) throws InvalidInputFileException
     {
-        Scanner inputFileScanner = new Scanner(new File(filename));
-        ArrayList<String> resources = new ArrayList<String>();
-        while (inputFileScanner.hasNext()){
-            resources.add(inputFileScanner.next());
+        try {
+            Scanner inputFileScanner = new Scanner(new File(filename));
+            ArrayList<String> resources = new ArrayList<String>();
+            while (inputFileScanner.hasNext()) {
+                resources.add(inputFileScanner.next());
+            }
+            inputFileScanner.close();
+            return resources;
+        } catch (FileNotFoundException e) {
+            throw new InvalidInputFileException();
         }
-        inputFileScanner.close();
-
-        return resources;
     }
 
     /**
@@ -50,7 +61,7 @@ public class InputFile
         DownloadList downloadList = new DownloadList();
         for (String resource : resources) {
             try {
-                downloadList.put(resource, new DownloadableFile(new URL(resource), new Progress("initialized")));
+                downloadList.put(resource, new Task(new URL(resource), new Progress("initialized")));
             } catch (MalformedURLException e) {
                 System.out.println("invalid url " + resource);
             }
@@ -60,8 +71,7 @@ public class InputFile
         if (downloadList.isEmpty()) {
             throw new InvalidInputFileException();
         }
-        //open file read line at a time, send through validateResource
-        //on error print invalid line and throw an exception
+
         return downloadList;
     }
 

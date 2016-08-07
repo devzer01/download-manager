@@ -1,9 +1,10 @@
 package com.gems.ui;
 
-import com.gems.util.DownloadList;
-import com.gems.util.DownloadableFile;
+import com.gems.DownloadManager;
+import com.gems.model.DownloadList;
+import com.gems.model.Task;
 import java.net.URL;
-import com.gems.util.Progress;
+import com.gems.model.Progress;
 import com.gems.event.ProgressListener;
 import com.gems.ui.formatter.Formatter;
 import java.util.Iterator;
@@ -16,20 +17,20 @@ import com.github.tomaslanger.chalk.Ansi;
  */
 public class ProgressIndicator implements ProgressListener {
 
-    private DownloadList downloadList;
+    private DownloadManager downloadManager;
 
     private Formatter formatter;
 
     private boolean drawOnce = false;
 
-    public ProgressIndicator(DownloadList downloadList)
-    {
-        this.downloadList = downloadList;
-    }
-
-    public void setFormatter(Formatter formatter)
+    public ProgressIndicator(Formatter formatter)
     {
         this.formatter = formatter;
+    }
+
+    public void setDownloadManager(DownloadManager downloadManager)
+    {
+        this.downloadManager = downloadManager;
     }
 
     public void onProgressEvent()
@@ -41,13 +42,14 @@ public class ProgressIndicator implements ProgressListener {
     //clear display and show again
     public void draw()
     {
+        DownloadList downloadList = downloadManager.getDownloadList();
         Iterator iterator = downloadList.entrySet().iterator();
-        if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
+        //if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry)iterator.next();
-            DownloadableFile downloadableFile = (DownloadableFile) pair.getValue();
-            Progress progress = downloadableFile.getProgress();
-            URL url = downloadableFile.getUrl();
+            Task task = (Task) pair.getValue();
+            Progress progress = task.getProgress();
+            URL url = task.getUrl();
             System.out.print(Ansi.eraseLine()); //erase current line
             System.out.print(formatter.format(url, progress));
         }
