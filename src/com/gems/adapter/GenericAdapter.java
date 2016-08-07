@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -18,6 +20,8 @@ public class GenericAdapter implements Adapter
     protected ArrayList<ProgressListener> progressListeners = new ArrayList<ProgressListener>();
 
     protected URL url;
+
+    protected URLConnection urlConnection;
 
     public GenericAdapter(URL url)
     {
@@ -41,11 +45,12 @@ public class GenericAdapter implements Adapter
         InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
         try {
-            URLConnection con = url.openConnection();
-            inputStream = con.getInputStream();
+            urlConnection = url.openConnection();
+            inputStream = urlConnection.getInputStream();
+            Path path = Paths.get(url.getFile());
 
             //TODO: write to tempfile and move when done
-            fileOutputStream = new FileOutputStream(downloadFolder + "/" + url.getFile());
+            fileOutputStream = new FileOutputStream(downloadFolder + "/" + path.getFileName().toString());
 
             int bytesRead = -1;
             byte[] buffer = new byte[4096];
@@ -66,9 +71,9 @@ public class GenericAdapter implements Adapter
                 fileOutputStream.close();
                 this.onProgress();
             } catch (IOException e) {
-                //System.out.println(e.getMessage());
+                System.out.println(e.getMessage());
             } catch (java.lang.NullPointerException e) {
-                //System.out.println(e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
     }

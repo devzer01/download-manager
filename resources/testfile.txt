@@ -1,5 +1,4 @@
-http://www.slbeat.com/index.html
-http://www.slbeat.com/index.html
-http://www.slbeat.com/foo.html
-ftp://root:V8UAEuP09X@www.slbeat.com/test.txt
+ftp://nayana:x2c4eva%23@www.slbeat.com/twistd.sftp.log
+
+
 

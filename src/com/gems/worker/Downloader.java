@@ -32,7 +32,7 @@ public class Downloader implements Runnable
         try {
             adapter.download(task.getProgress(), configFile.getDownloadFolder());
         } catch (IOException e) {
-
+            System.out.println(e.getMessage());
         }
     }
 }

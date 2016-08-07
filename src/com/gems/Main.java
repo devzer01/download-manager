@@ -24,6 +24,7 @@ public class Main {
             System.exit(1); //return with status 1 to indicate error
         }
 
+
         ConfigFile configFile = null;
         try {
             configFile = new ConfigFile();
@@ -33,6 +34,7 @@ public class Main {
         }
 
         DownloadList downloadList = null;
+        URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
 
         try {
             downloadList = InputFile.getURLList(args[0]);
@@ -45,18 +47,11 @@ public class Main {
         ProgressIndicator progressIndicator = new ProgressIndicator(formatter);
         Job job = new Job(downloadList, progressIndicator);
 
-        //rather than reinventing the wheel
-        // i decided to use URLStreamHandlerFactory after reading the documentation here
-        //https://docs.oracle.com/javase/7/docs/api/java/net/URL.html
-        URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
-
-        DownloadManager downloadManager = new DownloadManager(downloadList, configFile, progressIndicator);
+        DownloadManager downloadManager = new DownloadManager(job, configFile);
         downloadManager.startDownload();
     }
 
     /**
-     * //NOTE: i was getting an compiler error and had to drop my compiler
-     * //version to 1.5 so i had to split the catch statements
      * @param configFile
      * @return
      */
@@ -67,19 +62,7 @@ public class Main {
             Constructor<?> constructor = formatterClass.getConstructor();
             Formatter formatter = (Formatter) constructor.newInstance();
             return formatter;
-        } catch (ClassNotFoundException e) {
-            System.out.println("incorrect formatter in config");
-            System.exit(1);
-        } catch (NoSuchMethodException e) {
-            System.out.println("incorrect formatter in config");
-            System.exit(1);
-        } catch (IllegalAccessException e) {
-            System.out.println("incorrect formatter in config");
-            System.exit(1);
-        } catch (InstantiationException e) {
-            System.out.println("incorrect formatter in config");
-            System.exit(1);
-        } catch (InvocationTargetException e) {
+        } catch (ClassNotFoundException|NoSuchMethodException|IllegalAccessException|InstantiationException|InvocationTargetException e) {
             System.out.println("incorrect formatter in config");
             System.exit(1);
         }
