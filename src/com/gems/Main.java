@@ -2,6 +2,7 @@ package com.gems;
 
 import com.gems.exception.InvalidInputFileException;
 import com.gems.protocol.StreamHandlerFactory;
+import com.gems.ui.ProgressIndicator;
 import com.gems.util.ConfigFile;
 import com.gems.util.DownloadList;
 import com.gems.util.InputFile;
@@ -46,6 +47,7 @@ public class Main {
         URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
 
         DownloadManager downloadManager = new DownloadManager(downloadList, configFile.getDownloadFolder());
+        downloadManager.setProgressIndicator(new ProgressIndicator(););
         downloadManager.download();
 
         //multi thread mode
