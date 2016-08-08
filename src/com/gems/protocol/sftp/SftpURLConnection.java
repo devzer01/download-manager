@@ -9,8 +9,10 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import com.jcraft.jsch.*;
 
+import com.gems.util.UserInfo;
+import com.jcraft.jsch.*;
+import org.apache.log4j.Logger;
 /**
  * Created by nayan on 8/5/16.
  */
@@ -31,49 +33,42 @@ public class SftpURLConnection extends URLConnection {
         super(url);
     }
 
+    protected Logger log = Logger.getLogger(SftpURLConnection.class.getName());
+
+
     @Override
     public void connect() throws IOException
     {
         URL url = this.getURL();
 
-        /*** refactor
-         *
-         */
-        String username = "";
-        String password = "";
-
-        String userInfo = url.getUserInfo();
-
-        if(userInfo!=null && userInfo.length()>0) {
-            String[] userPassPair = userInfo.split(":");
-            username = userPassPair[0];
-            password = java.net.URLDecoder.decode(userPassPair[1], "UTF-8");
-        }
-
-
+        UserInfo userInfo = new UserInfo(url.getUserInfo());
         jSch = new JSch();
 
+        int port = url.getPort();
+        if (port == -1) port = url.getDefaultPort();
+
         try {
-            session = jSch.getSession(username, url.getHost(), url.getDefaultPort());
-            session.setPassword(password);
+            session = jSch.getSession(userInfo.getUsername(), url.getHost(), port);
+            session.setPassword(userInfo.getPassword());
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
             session.connect();
+            log.debug("ssh channel open");
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
-            System.out.print("connected sftp");
+            log.debug("sftp channel open");
 
         } catch (JSchException e) {
-            System.out.println("Exception in connect() handler inputstream");
+            log.debug("exception in connecting to server, check username password");
             throw new IOException();
         }
     }
 
     public void disconnect()
     {
-        System.out.println("call disconnect ---");
+        log.debug("disconnecting sftp and ssh channels");
         channelSftp.disconnect();
         session.disconnect();
     }
@@ -90,21 +85,27 @@ public class SftpURLConnection extends URLConnection {
                 connect();
             }
 
-            Path path = Paths.get(url.getFile());
-            ArrayList<String> pathParts = new ArrayList<String>();
-            //we need to build base path
-            for (int i=0; i < path.getNameCount() - 1; i++) {
-                pathParts.add(path.getName(i).toString());
-            }
-            String hostPath = String.join("/", pathParts);
-
-            channelSftp.cd("/" + hostPath);
-            SftpATTRS sftpATTRS = channelSftp.lstat(path.getFileName().toString());
+            String hostPath = this.getHostPath(url.getFile());
+            String remoteFileName = Paths.get(url.getFile()).getFileName().toString();
+            channelSftp.cd(hostPath);
+            SftpATTRS sftpATTRS = channelSftp.lstat(remoteFileName);
             size = sftpATTRS.getSize();
-            return new BufferedInputStream(channelSftp.get(path.getFileName().toString()));
+            return new BufferedInputStream(channelSftp.get(remoteFileName));
         } catch (SftpException e) {
-            System.out.println("Exception in connection handler inputstream");
+            log.debug("file not found or other stream error");
             throw new IOException();
         }
+    }
+
+    protected String getHostPath(String file)
+    {
+        Path path = Paths.get(file);
+        ArrayList<String> pathParts = new ArrayList<String>();
+        for (int i=0; i < path.getNameCount() - 1; i++) {
+            pathParts.add(path.getName(i).toString());
+        }
+        String hostPath = String.join("/", pathParts);
+
+        return "/" + hostPath;
     }
 }

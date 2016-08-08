@@ -8,6 +8,9 @@ import java.net.URLStreamHandler;
  * Created by nayan on 8/5/16.
  */
 public class SftpURLStreamHandler extends URLStreamHandler {
+
+    protected int defaultPort = 22;
+
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
         SftpURLConnection sftpURLConnection = new SftpURLConnection(url);
@@ -18,6 +21,6 @@ public class SftpURLStreamHandler extends URLStreamHandler {
     @Override
     protected int getDefaultPort()
     {
-        return 22;
+        return defaultPort;
     }
 }

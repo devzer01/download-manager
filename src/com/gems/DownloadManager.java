@@ -26,8 +26,10 @@ public class DownloadManager {
 
     private ProgressIndicator progressIndicator;
 
+    protected Job job = null;
+
     public DownloadManager(Job job, ConfigFile configFile) {
-        this.downloadList = job.getDownloadList();
+        this.job = job;
         this.configFile = configFile;
         this.progressIndicator = job.getProgressIndicator();
         this.progressIndicator.setDownloadManager(this);
@@ -38,12 +40,12 @@ public class DownloadManager {
         ExecutorService executor = Executors.newFixedThreadPool(configFile.getThreadCount());
 
         //iterate through collection (single thread mode first)
-        Iterator iterator = downloadList.entrySet().iterator();
+        Iterator iterator = job.getDownloadList().entrySet().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
             Task task = (Task) pair.getValue();
-
+            task.setProgressIndicator(progressIndicator);
             Downloader downloader = new Downloader(task, progressIndicator, configFile);
             executor.execute(downloader);
         }

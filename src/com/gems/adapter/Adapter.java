@@ -4,6 +4,7 @@ import com.gems.event.ProgressListener;
 import com.gems.model.Progress;
 import com.gems.util.ConfigFile;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -11,7 +12,7 @@ import java.io.IOException;
  */
 public interface Adapter
 {
-    void download(Progress progress, ConfigFile configFile) throws IOException;
+    File download() throws IOException;
 
     void setOnProgressListener(ProgressListener progressListener);
 }

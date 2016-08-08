@@ -1,4 +1,4 @@
-package com.gems.protocol.sftp;
+package com.gems.worker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -7,9 +7,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Created by nayan on 8/7/16.
+ * Created by nayan on 8/8/16.
  */
-public class SftpURLConnectionTest {
+public class DownloaderTest {
     @Before
     public void setUp() throws Exception {
 
@@ -21,7 +21,7 @@ public class SftpURLConnectionTest {
     }
 
     @Test
-    public void connect() throws Exception {
+    public void run() throws Exception {
 
     }
 

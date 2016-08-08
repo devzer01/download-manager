@@ -32,9 +32,8 @@ public class Downloader implements Runnable
 
     public void run() {
         try {
-            Adapter adapter = AdapterFactory.getAdapter(task.getUrl());
-            adapter.setOnProgressListener(progressIndicator);
-            adapter.download(task.getProgress(), configFile);
+            Adapter adapter = AdapterFactory.getAdapter(task);
+            adapter.download();
         } catch (IOException|AdapterNotFoundException e) {
             log.warn(task.getUrl() + " - Download error");
             task.getProgress().status = "error";

@@ -13,9 +13,9 @@ import java.util.prefs.Preferences;
  */
 public class ConfigFile {
 
-    private String defaultConfig = "resources/config.ini";
+    protected String defaultConfig = "resources/config.ini";
 
-    private Preferences prefs = null;
+    protected Preferences prefs = null;
 
     public ConfigFile() throws IOException
     {
@@ -34,8 +34,8 @@ public class ConfigFile {
         return this.prefs.node("main").get("progress_formatter", null);
     }
 
-    public String getTempDir() {
-        return this.prefs.node("main").get("temp_dir", System.getProperty("java.io.tmpdir"));
+    public static String getTempDir() {
+        return System.getProperty("java.io.tmpdir");
     }
 
     public int getThreadCount()

@@ -1,5 +1,7 @@
 package com.gems.model;
 
+import com.gems.ui.ProgressIndicator;
+
 import java.net.URL;
 
 /**
@@ -10,6 +12,8 @@ public class Task
     protected URL url;
 
     protected Progress progress;
+
+    protected ProgressIndicator progressIndicator;
 
     public Task(URL url, Progress progress)
     {
@@ -25,4 +29,13 @@ public class Task
         return progress;
     }
 
+    public void setProgressIndicator(ProgressIndicator progressIndicator)
+    {
+        this.progressIndicator = progressIndicator;
+    }
+
+    public ProgressIndicator getProgressIndicator()
+    {
+        return progressIndicator;
+    }
 }
