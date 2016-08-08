@@ -35,7 +35,7 @@ public class InputFile
      * @return ArrayList
      * @throws InvalidInputFileException
      */
-    private static ArrayList<String> load(String filename) throws InvalidInputFileException
+    protected static ArrayList<String> load(String filename) throws InvalidInputFileException
     {
         try {
             Scanner inputFileScanner = new Scanner(new File(filename));
@@ -56,7 +56,7 @@ public class InputFile
      * @return
      * @throws InvalidInputFileException
      */
-    private static DownloadList parse(ArrayList<String> resources) throws InvalidInputFileException
+    protected static DownloadList parse(ArrayList<String> resources) throws InvalidInputFileException
     {
         DownloadList downloadList = new DownloadList();
         for (String resource : resources) {

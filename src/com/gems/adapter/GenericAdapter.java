@@ -68,19 +68,18 @@ public class GenericAdapter implements Adapter
 
             progress.status = "finished";
 
+            File fileTemp = new File(tempFileName);
+            fileTemp.renameTo(new File(configFile.getDownloadFolder() + "/" + path.getFileName().toString()));
 
         } catch (IOException e) {
             progress.status = "error";
-
-            //delete temp file
-
+            File fileTemp = new File(tempFileName);
+            fileTemp.delete();
         } finally {
             try {
                 inputStream.close();
                 fileOutputStream.close();
                 this.onProgress();
-                File fileTemp = new File(tempFileName);
-                fileTemp.renameTo(new File(configFile.getDownloadFolder() + "/" + path.getFileName().toString()));
             } catch (IOException|NullPointerException e) {
                 System.out.println(e.getMessage());
             }

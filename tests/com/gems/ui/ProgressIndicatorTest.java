@@ -19,7 +19,8 @@ public class ProgressIndicatorTest {
     }
 
     @Test
-    public void draw() throws Exception {
+    public void draw() throws Exception
+    {
 
     }
 

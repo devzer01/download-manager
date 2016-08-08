@@ -13,9 +13,9 @@ import java.util.prefs.Preferences;
  */
 public class ConfigFile {
 
-    private String defaultConfig = "resources/config.ini";
+    protected String defaultConfig = "resources/config.ini";
 
-    private Preferences prefs = null;
+    protected Preferences prefs = null;
 
     public ConfigFile() throws IOException
     {

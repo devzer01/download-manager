@@ -2,6 +2,7 @@ package com.gems;
 
 import com.gems.exception.InvalidInputFileException;
 import com.gems.protocol.StreamHandlerFactory;
+import com.gems.ui.ConsoleProgressIndicator;
 import com.gems.ui.ProgressIndicator;
 import com.gems.util.ConfigFile;
 import com.gems.model.DownloadList;
@@ -51,7 +52,7 @@ public class Main {
         }
 
         Formatter formatter = getFormatter(configFile);
-        ProgressIndicator progressIndicator = new ProgressIndicator(formatter);
+        ProgressIndicator progressIndicator = new ConsoleProgressIndicator(formatter);
         Job job = new Job(downloadList, progressIndicator);
 
         DownloadManager downloadManager = new DownloadManager(job, configFile);

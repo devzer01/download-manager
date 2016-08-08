@@ -15,13 +15,13 @@ import com.github.tomaslanger.chalk.Ansi;
 /**
  * Created by nayana on 8/5/16.
  */
-public class ProgressIndicator implements ProgressListener {
+abstract public class ProgressIndicator implements ProgressListener {
 
-    private DownloadManager downloadManager;
+    protected DownloadManager downloadManager;
 
-    private Formatter formatter;
+    protected Formatter formatter;
 
-    private boolean drawOnce = false;
+    protected boolean drawOnce = false;
 
     public ProgressIndicator(Formatter formatter)
     {
@@ -40,19 +40,5 @@ public class ProgressIndicator implements ProgressListener {
 
     //display all files in progress
     //clear display and show again
-    public void draw()
-    {
-        DownloadList downloadList = downloadManager.getDownloadList();
-        Iterator iterator = downloadList.entrySet().iterator();
-        if (drawOnce) System.out.print(Ansi.cursorUp(downloadList.entrySet().size())); //move cursor up
-        while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry)iterator.next();
-            Task task = (Task) pair.getValue();
-            Progress progress = task.getProgress();
-            URL url = task.getUrl();
-            System.out.print(Ansi.eraseLine()); //erase current line
-            System.out.print(formatter.format(url, progress));
-        }
-        drawOnce = true;
-    }
+    abstract public void draw();
 }

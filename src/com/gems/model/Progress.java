@@ -6,7 +6,7 @@ package com.gems.model;
 public class Progress {
     public String status;
 
-    public long size;
+    public long size = 0;
 
     public Progress (String status)
     {
