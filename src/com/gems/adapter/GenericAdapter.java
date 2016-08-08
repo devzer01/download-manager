@@ -1,7 +1,6 @@
 package com.gems.adapter;
 
 import com.gems.event.ProgressListener;
-import com.gems.model.Progress;
 import com.gems.model.Status;
 import com.gems.model.Task;
 import com.gems.util.ConfigFile;
@@ -10,11 +9,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.io.File;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -30,7 +29,7 @@ public class GenericAdapter implements Adapter
 
     protected Task task;
 
-    protected org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GenericAdapter.class.getName());
+    protected Logger log = Logger.getLogger(GenericAdapter.class.getName());
 
     protected URLConnection urlConnection;
 
@@ -49,6 +48,12 @@ public class GenericAdapter implements Adapter
         progressListeners.forEach((progressListener) -> progressListener.onProgressEvent());
     }
 
+    /**
+     * the Adapter implementation for a single stream URLConnections (HTTP, FTP)
+     *
+     * @return
+     * @throws IOException
+     */
     public File download() throws IOException
     {
         InputStream inputStream = null;
@@ -60,12 +65,19 @@ public class GenericAdapter implements Adapter
 
             urlConnection = task.getUrl().openConnection();
             urlConnection.setConnectTimeout(defaultSocketTimeout);
+            urlConnection.connect();
             inputStream = urlConnection.getInputStream();
 
             task.getProgress().size = urlConnection.getContentLengthLong();
 
             fileOutputStream = new FileOutputStream(tempFileName);
 
+            /**
+             * if required we can set the bufferSize dynamically
+             * based on connection speed by calculating
+             * the current transfer speed
+             * where bufferSize is a function of fileSize and connectionSpeed
+             */
             int bytesRead = -1;
             byte[] byteBuffer = new byte[defaultBufferSize];
 
@@ -73,6 +85,7 @@ public class GenericAdapter implements Adapter
 
             while ((bytesRead = inputStream.read(byteBuffer)) != -1) {
                 fileOutputStream.write(byteBuffer, 0, bytesRead);
+                task.getProgress().currentSize += bytesRead;
                 this.onProgress();
             }
 

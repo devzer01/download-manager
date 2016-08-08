@@ -4,6 +4,9 @@ import com.gems.ui.ProgressIndicator;
 
 /**
  * Created by nayan on 8/7/16.
+ *
+ * A job represent a single run of the application, encapsulates the list of URLs to be downloaded
+ * and the progressIndicator that should be used to display progress
  */
 public class Job {
 

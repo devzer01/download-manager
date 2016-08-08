@@ -6,6 +6,9 @@ import java.net.URL;
 
 /**
  * Created by nayana on 8/6/16.
+ *
+ * Task represents a Single URL download with URL and its Progress,
+ * Also has the reference to main progressIndicator
  */
 public class Task
 {

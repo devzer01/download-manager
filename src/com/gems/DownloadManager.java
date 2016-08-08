@@ -20,43 +20,48 @@ public class DownloadManager {
 
     protected Logger log = Logger.getLogger(DownloadManager.class.getName());
 
-    private DownloadList downloadList;
-
     private ConfigFile configFile;
 
     private ProgressIndicator progressIndicator;
 
     protected Job job = null;
 
+    /**
+     * configures the job at hand
+     *
+     * @param job
+     * @param configFile
+     */
     public DownloadManager(Job job, ConfigFile configFile) {
         this.job = job;
         this.configFile = configFile;
         this.progressIndicator = job.getProgressIndicator();
-        this.progressIndicator.setDownloadManager(this);
+        this.progressIndicator.setDownloadManager(this); //used to retrieve downloadList
     }
 
+    /**
+     * creates the thread-pool and iterate through the list of files to be downloaded
+     */
     public void startDownload()
     {
         ExecutorService executor = Executors.newFixedThreadPool(configFile.getThreadCount());
-
-        //iterate through collection (single thread mode first)
         Iterator iterator = job.getDownloadList().entrySet().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
             Task task = (Task) pair.getValue();
             task.setProgressIndicator(progressIndicator);
-            Downloader downloader = new Downloader(task, progressIndicator, configFile);
+            Downloader downloader = new Downloader(task, configFile);
             executor.execute(downloader);
         }
         executor.shutdown();
         while (!executor.isTerminated()) {
-            log.debug("Waiting for threads to finish download");
+            //log.debug("Waiting for threads to finish download");
         }
 
     }
 
     public DownloadList getDownloadList() {
-        return downloadList;
+        return job.getDownloadList();
     }
 }

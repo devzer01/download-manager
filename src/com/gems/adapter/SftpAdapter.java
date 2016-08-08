@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.gems.model.Task;
+import com.gems.protocol.sftp.DisconnectStream;
 import com.gems.protocol.sftp.SftpURLConnection;
 import com.gems.util.ConfigFile;
 import java.io.File;
@@ -36,7 +37,7 @@ public class SftpAdapter extends GenericAdapter
     public File download() throws IOException
     {
         File file = super.download();
-        ((SftpURLConnection) urlConnection).disconnect();
+        ((DisconnectStream) urlConnection).disconnect();
         return file;
     }
 }

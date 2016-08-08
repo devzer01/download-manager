@@ -12,6 +12,9 @@ import java.util.Map;
 
 /**
  * Created by nayana on 8/8/16.
+ *
+ * ConsoleProgressIndicator (rename->) AnsiConsoleProgressIndicator
+ * uses a 3rd party ANSI library that is capable of doing colors
  */
 public class ConsoleProgressIndicator extends ProgressIndicator
 {
@@ -32,6 +35,8 @@ public class ConsoleProgressIndicator extends ProgressIndicator
             Progress progress = task.getProgress();
             URL url = task.getUrl();
             System.out.print(Ansi.eraseLine()); //erase current line
+            //TODO if progress.status == Status.ERROR then color red
+            //TODO if progress.status == Status.DONE then green
             System.out.print(formatter.format(url, progress));
         }
         drawOnce = true;

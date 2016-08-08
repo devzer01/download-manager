@@ -1,5 +1,6 @@
 package com.gems;
 
+import com.gems.adapter.MockedStreamHandlerFactory;
 import com.gems.model.*;
 import com.gems.ui.ConsoleProgressIndicator;
 import com.gems.ui.ProgressIndicator;
@@ -10,47 +11,46 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
+import java.io.File;
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.net.URLStreamHandlerFactory;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.io.IOException;
-import java.io.File;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by nayana on 8/7/16.
  *
  * functional test
  */
-public class DownloadManagerTest {
+public class DownloadManagerFailTest extends DownloadManagerTest {
     @Before
     public void setUp() throws Exception {
-
-        ConfigFile configFile = new ConfigFile();
+        super.setUp();
+        URLStreamHandlerFactory factory = new MockedStreamHandlerFactory();
         try {
-            Files.newDirectoryStream(Paths.get(configFile.getDownloadFolder())).forEach(
-                    file -> {
-                        try { Files.delete( file ); }
-                        catch ( IOException e ) { throw new UncheckedIOException(e); }
-            } );
-        }
-        catch ( IOException e ) {
-            e.printStackTrace();
-        }
+            URL.setURLStreamHandlerFactory(factory);
+        } catch (final Error e) {
 
+        }
     }
 
     @After
     public void tearDown() throws Exception {
-
+        ClearFactory.clearFactory();
     }
 
+    /**
+     * we use the mock factory set on sftp to test the faliure
+     * @throws Exception
+     */
     @Test
     public void download() throws Exception {
         DownloadList downloadList = new DownloadList();
-        URL url = new URL("http://www.slbeat.com/twistd.log");
+        URL url = new URL("sftp://www.slbeat.com/twistd.log");
         Task task = new Task(url, new Progress(Status.INIT));
         downloadList.put("foobar", task);
         ProgressIndicator progressIndicator = new ConsoleProgressIndicator(new BasicFormatter());
@@ -59,12 +59,6 @@ public class DownloadManagerTest {
         DownloadManager downloadManager = new DownloadManager(job, configFile);
         downloadManager.startDownload();
         File file = new File(configFile.getDownloadFolder() + File.separator + Filename.UrlToFilename(url));
-        assertTrue(file.exists());
+        assertTrue(!file.exists());
     }
-
-    @Test
-    public void setDownloadFolder() throws Exception {
-
-    }
-
 }
