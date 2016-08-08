@@ -11,23 +11,32 @@ import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import com.gems.model.Task;
 import com.gems.protocol.sftp.SftpURLConnection;
 import com.gems.util.ConfigFile;
+import java.io.File;
 
 /**
  * Created by nayana on 8/6/16.
  */
 public class SftpAdapter extends GenericAdapter
 {
+    protected int defaultBufferSize = 4096;
 
-    public SftpAdapter(URL url)
+    protected int defaultSocketTimeout = 10000; //10 seconds for timeout
+
+    protected org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SftpAdapter.class.getName());
+
+    public SftpAdapter(Task task)
     {
-        super(url);
+        super(task);
     }
 
-    public void download(Progress progress, ConfigFile configFile) throws IOException
+    public File download() throws IOException
     {
-        super.download(progress, configFile);
+        File file = super.download();
         ((SftpURLConnection) urlConnection).disconnect();
+        return file;
     }
 }

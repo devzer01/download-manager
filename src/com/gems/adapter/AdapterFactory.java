@@ -2,20 +2,24 @@ package com.gems.adapter;
 
 import com.gems.exception.AdapterNotFoundException;
 
-import java.net.URL;
+import com.gems.model.Task;
 /**
  * Created by nayana on 8/6/16.
  */
 public class AdapterFactory
 {
-    public static Adapter getAdapter(URL url) throws AdapterNotFoundException
+    public static Adapter getAdapter(Task task) throws AdapterNotFoundException
     {
-        String protocol = url.getProtocol();
+        Adapter adapter = null;
+        String protocol = task.getUrl().getProtocol();
         if (protocol.equals("http") || protocol.equals("ftp")) {
-            return new GenericAdapter(url);
+            adapter = new GenericAdapter(task);
         } else if(protocol.equals("sftp")) {
-            return new SftpAdapter(url);
+            adapter = new SftpAdapter(task);
+        } else {
+            throw new AdapterNotFoundException();
         }
-        throw new AdapterNotFoundException();
+        adapter.setOnProgressListener(task.getProgressIndicator());
+        return adapter;
     }
 }

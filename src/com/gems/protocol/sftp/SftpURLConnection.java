@@ -9,12 +9,10 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import com.gems.DownloadManager;
+
 import com.gems.util.UserInfo;
 import com.jcraft.jsch.*;
-import com.jcraft.jsch.Logger;
-import org.apache.log4j.*;
-
+import org.apache.log4j.Logger;
 /**
  * Created by nayan on 8/5/16.
  */
@@ -35,7 +33,7 @@ public class SftpURLConnection extends URLConnection {
         super(url);
     }
 
-    protected org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SftpURLConnection.class.getName());
+    protected Logger log = Logger.getLogger(SftpURLConnection.class.getName());
 
 
     @Override

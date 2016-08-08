@@ -34,8 +34,8 @@ public class ConfigFile {
         return this.prefs.node("main").get("progress_formatter", null);
     }
 
-    public String getTempDir() {
-        return this.prefs.node("main").get("temp_dir", System.getProperty("java.io.tmpdir"));
+    public static String getTempDir() {
+        return System.getProperty("java.io.tmpdir");
     }
 
     public int getThreadCount()

@@ -2,6 +2,8 @@ package com.gems.adapter;
 
 import com.gems.event.ProgressListener;
 import com.gems.model.Progress;
+import com.gems.model.Status;
+import com.gems.model.Task;
 import com.gems.util.ConfigFile;
 
 import java.io.FileOutputStream;
@@ -20,15 +22,21 @@ import java.io.File;
  */
 public class GenericAdapter implements Adapter
 {
+    protected int defaultBufferSize = 4096;
+
+    protected int defaultSocketTimeout = 10000; //10 seconds for timeout
+
     protected ArrayList<ProgressListener> progressListeners = new ArrayList<ProgressListener>();
 
-    protected URL url;
+    protected Task task;
+
+    protected org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GenericAdapter.class.getName());
 
     protected URLConnection urlConnection;
 
-    public GenericAdapter(URL url)
+    public GenericAdapter(Task task)
     {
-        this.url = url;
+        this.task = task;
     }
 
     public void setOnProgressListener(ProgressListener progressListner)
@@ -38,51 +46,51 @@ public class GenericAdapter implements Adapter
 
     protected void onProgress()
     {
-        for (ProgressListener progressListener : this.progressListeners) {
-            progressListener.onProgressEvent();
-        }
+        progressListeners.forEach((progressListener) -> progressListener.onProgressEvent());
     }
 
-    public void download(Progress progress, ConfigFile configFile) throws IOException
+    public File download() throws IOException
     {
         InputStream inputStream = null;
         FileOutputStream fileOutputStream = null;
-        Path path = Paths.get(url.getFile());
-        String tempFileName = configFile.getTempDir() + "/" + path.getFileName().toString();
+
+        Path path = Paths.get(task.getUrl().getFile());
+        String tempFileName = ConfigFile.getTempDir() + File.separator + path.getFileName().toString();
         try {
 
-            urlConnection = url.openConnection();
+            urlConnection = task.getUrl().openConnection();
+            urlConnection.setConnectTimeout(defaultSocketTimeout);
             inputStream = urlConnection.getInputStream();
-            progress.size = urlConnection.getContentLengthLong();
+
+            task.getProgress().size = urlConnection.getContentLengthLong();
 
             fileOutputStream = new FileOutputStream(tempFileName);
 
             int bytesRead = -1;
-            byte[] buffer = new byte[4096];
+            byte[] byteBuffer = new byte[defaultBufferSize];
 
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                fileOutputStream.write(buffer, 0, bytesRead);
-                progress.status = "downloading...";
+            task.getProgress().status = Status.DOWNLOADING;
+
+            while ((bytesRead = inputStream.read(byteBuffer)) != -1) {
+                fileOutputStream.write(byteBuffer, 0, bytesRead);
                 this.onProgress();
             }
 
-            progress.status = "finished";
-
-            File fileTemp = new File(tempFileName);
-            fileTemp.renameTo(new File(configFile.getDownloadFolder() + "/" + path.getFileName().toString()));
+            task.getProgress().status = Status.DONE;
 
         } catch (IOException e) {
-            progress.status = "error";
-            File fileTemp = new File(tempFileName);
-            fileTemp.delete();
+            task.getProgress().status = Status.ERROR;
         } finally {
             try {
                 inputStream.close();
                 fileOutputStream.close();
-                this.onProgress();
             } catch (IOException|NullPointerException e) {
-                System.out.println(e.getMessage());
+                log.debug("error when closing stream");
             }
         }
+
+        this.onProgress();
+
+        return new File(tempFileName);
     }
 }

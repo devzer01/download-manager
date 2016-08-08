@@ -1,23 +1,31 @@
-package com.gems.protocol.sftp;
+package com.gems.adapter;
 
-import com.gems.protocol.StreamHandlerFactory;
+import com.gems.model.Progress;
+import com.gems.util.ConfigFile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
-import java.net.URL;
 
 import static org.junit.Assert.*;
 
 /**
- * Created by nayan on 8/7/16.
+ * Created by nayana on 8/8/16.
  */
-public class SftpURLStreamHandlerTest {
+public class SftpAdapterTest {
+    @Test
+    public void download() throws Exception {
+        SftpAdapter sftpAdapter = new SftpAdapter(new URL("sftp://www.foobar.com/getfile"));
+        sftpAdapter.download(new Progress("init"), new ConfigFile());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -49,6 +57,7 @@ public class SftpURLStreamHandlerTest {
         InputStream inputStream = urlConnection.getInputStream();
         byte[] buffer = new byte[10];
         int readBytes = inputStream.read(buffer);
+        inputStream.close();
         assertEquals(6, readBytes);
     }
 }

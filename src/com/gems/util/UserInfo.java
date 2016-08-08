@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
  */
 public class UserInfo
 {
+    protected String userPassSplitChar = ":";
+
     private String username;
 
     private String password;
@@ -14,7 +16,7 @@ public class UserInfo
     public UserInfo(String userInfo) throws UnsupportedEncodingException, ArrayIndexOutOfBoundsException
     {
         if(userInfo!=null && userInfo.length()>0) {
-            String[] userPassPair = userInfo.split(":");
+            String[] userPassPair = userInfo.split(userPassSplitChar);
             username = userPassPair[0];
             password = java.net.URLDecoder.decode(userPassPair[1], "UTF-8");
         }
