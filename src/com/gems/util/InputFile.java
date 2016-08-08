@@ -2,6 +2,7 @@ package com.gems.util;
 
 import com.gems.exception.InvalidInputFileException;
 import com.gems.model.DownloadList;
+import com.gems.model.Status;
 import com.gems.model.Task;
 import com.gems.model.Progress;
 
@@ -61,7 +62,7 @@ public class InputFile
         DownloadList downloadList = new DownloadList();
         for (String resource : resources) {
             try {
-                downloadList.put(resource, new Task(new URL(resource), new Progress("initialized")));
+                downloadList.put(resource, new Task(new URL(resource), new Progress(Status.INIT)));
             } catch (MalformedURLException e) {
                 System.out.println("invalid url " + resource);
             }

@@ -6,6 +6,8 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 /**
  * Created by nayan on 8/5/16.
+ *
+ * used to register with URL StreamFactory
  */
 public class StreamHandlerFactory implements URLStreamHandlerFactory {
 

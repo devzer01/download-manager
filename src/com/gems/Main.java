@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.lang.reflect.Constructor;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
@@ -23,13 +25,18 @@ public class Main {
 
     protected static Logger log = Logger.getLogger(Main.class.getName());
 
+    public static void errorExit(String string)
+    {
+        System.out.println(string);
+        System.exit(1);
+    }
+
     public static void main(String[] args) {
 
         log.info("Starting downloader");
 
         if (args.length == 0) {
-            System.out.println("please specify a input file that contains sources to startDownload");
-            System.exit(1); //return with status 1 to indicate error
+            errorExit("please specify a input file that contains sources to startDownload");
         }
 
 
@@ -37,8 +44,16 @@ public class Main {
         try {
             configFile = new ConfigFile();
         } catch (IOException e) {
-            System.out.println("default config file not found");
-            System.exit(1);
+            errorExit("default config file not found");
+        }
+
+        //validate if download directory exists and can write a file to it
+        if (Files.notExists(Paths.get(configFile.getDownloadFolder()))) {
+            errorExit("configured download directory doesn't exist");
+        }
+
+        if (!Files.isWritable(Paths.get(configFile.getDownloadFolder()))) {
+            errorExit("download directory is not writable");
         }
 
         DownloadList downloadList = null;
@@ -47,8 +62,7 @@ public class Main {
         try {
             downloadList = InputFile.getURLList(args[0]);
         } catch (InvalidInputFileException e) {
-            System.out.println("input file format not recognized, or file not found");
-            System.exit(1);
+            errorExit("input file format not recognized, or file not found");
         }
 
         Formatter formatter = getFormatter(configFile);
@@ -71,8 +85,7 @@ public class Main {
             Formatter formatter = (Formatter) constructor.newInstance();
             return formatter;
         } catch (ClassNotFoundException|NoSuchMethodException|IllegalAccessException|InstantiationException|InvocationTargetException e) {
-            System.out.println("incorrect formatter in config");
-            System.exit(1);
+            errorExit("incorrect formatter in config");
         }
 
         return null;

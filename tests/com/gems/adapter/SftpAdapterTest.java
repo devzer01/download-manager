@@ -1,12 +1,16 @@
 package com.gems.adapter;
 
+import com.gems.ClearFactory;
 import com.gems.model.Progress;
-import com.gems.util.ConfigFile;
+import com.gems.model.Status;
+import com.gems.model.Task;
+import com.gems.protocol.sftp.DisconnectStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -21,12 +25,38 @@ import static org.junit.Assert.*;
  * Created by nayana on 8/8/16.
  */
 public class SftpAdapterTest {
+
+    protected long expectedFileSize = 6;
+
+    /**
+     * using mocked URLConnections
+     * file download success
+     * @throws Exception
+     */
     @Test
     public void download() throws Exception {
-        SftpAdapter sftpAdapter = new SftpAdapter(new URL("sftp://www.foobar.com/getfile"));
-        sftpAdapter.download(new Progress("init"), new ConfigFile());
+        Task task = new Task(new URL("sftp://www.foobar.com/foobar"), new Progress(Status.INIT));
+        SftpAdapter sftpAdapter = new SftpAdapter(task);
+        File file = sftpAdapter.download();
+        assertEquals(expectedFileSize, file.length());
     }
 
+    /**
+     * filedownload fails
+     * @throws Exception
+     */
+    @Test
+    public void downloadFail() throws Exception {
+        Task task = new Task(new URL("sftp://www.foobar.com/failedfile"), new Progress(Status.INIT));
+        SftpAdapter sftpAdapter = new SftpAdapter(task);
+        File file = sftpAdapter.download();
+        assertEquals(Status.ERROR, task.getProgress().status);
+    }
+
+    /**
+     * we are setting our MockedUrlStreamHandler factory
+     * @throws Exception
+     */
     @Before
     public void setUp() throws Exception {
         URLStreamHandlerFactory factory = new MockedStreamHandlerFactory();
@@ -37,61 +67,30 @@ public class SftpAdapterTest {
         }
     }
 
+    /**
+     * using reflection we will unset the URLStreamHandler factory
+     * @throws Exception
+     */
     @After
     public void tearDown() throws Exception {
-        try {
-            final Field factoryField = URL.class.getDeclaredField("factory");
-            factoryField.setAccessible(true);
-            factoryField.set(null, null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new Error("Could not access factory field on URL class: {}", e);
-        }
+        ClearFactory.clearFactory();
 
     }
 
+    /**
+     * Redundent Test testing successful buffer read
+     * @throws Exception
+     */
     @Test
     public void openConnection() throws Exception
     {
-        URL url = new URL("sftp://www.foobar.com/getfile");
+        URL url = new URL("sftp://www.foobar.com/foobar");
         URLConnection urlConnection = url.openConnection();
         InputStream inputStream = urlConnection.getInputStream();
         byte[] buffer = new byte[10];
         int readBytes = inputStream.read(buffer);
         inputStream.close();
-        assertEquals(6, readBytes);
+        assertEquals(expectedFileSize, readBytes);
     }
 }
 
-class MockedStreamHandlerFactory implements URLStreamHandlerFactory {
-    public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (protocol.equals("sftp")) {
-            return new MockedSftpURLStreamHandler();
-        }
-        return null;
-    }
-}
-
-class MockedSftpURLStreamHandler extends URLStreamHandler {
-
-    protected URLConnection openConnection(URL url) throws IOException
-    {
-        return new MockedSftpUrlConnection(url);
-    }
-}
-
-class MockedSftpUrlConnection extends URLConnection {
-
-    public MockedSftpUrlConnection(URL url)
-    {
-        super(url);
-    }
-
-    public void connect() {
-
-    }
-
-    public InputStream getInputStream() {
-        byte[] buffer = "abcdef".getBytes();
-        return new ByteArrayInputStream(buffer);
-    }
-}

@@ -2,6 +2,8 @@ package com.gems.model;
 
 /**
  * Created by nayana on 8/6/16.
+ *
+ * used to keep progress of a single URL download
  */
 public class Progress {
     public Status status;

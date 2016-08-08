@@ -14,7 +14,6 @@ public class SftpURLStreamHandler extends URLStreamHandler {
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
         SftpURLConnection sftpURLConnection = new SftpURLConnection(url);
-        sftpURLConnection.connect();
         return sftpURLConnection;
     }
 

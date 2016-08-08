@@ -1,5 +1,6 @@
 package com.gems.util;
 
+import com.gems.ClearFactory;
 import com.gems.exception.InvalidInputFileException;
 import com.gems.model.DownloadList;
 import com.gems.protocol.StreamHandlerFactory;
@@ -27,26 +28,13 @@ public class InputFileTest {
         try {
             URL.setURLStreamHandlerFactory(factory);
         } catch (final Error e) {
-            /*try {
-                final Field factoryField = URL.class.getDeclaredField("factory");
-                factoryField.setAccessible(true);
-                factoryField.set(null, factory);
-            } catch (NoSuchFieldException | IllegalAccessException e1) {
-                throw new Error("Could not access factory field on URL class: {}", e);
-            }*/
+
         }
     }
 
     @After
     public void tearDown() throws Exception {
-        try {
-            final Field factoryField = URL.class.getDeclaredField("factory");
-            factoryField.setAccessible(true);
-            factoryField.set(null, null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new Error("Could not access factory field on URL class: {}", e);
-        }
-
+        ClearFactory.clearFactory();
     }
 
     @Test
@@ -60,6 +48,19 @@ public class InputFileTest {
         boolean expectedExceptionThrown = false;
         try {
             inputFileStub.testLoad("resource/test/url.list");
+        } catch (InvalidInputFileException e) {
+            expectedExceptionThrown = true;
+        }
+
+        assertTrue(expectedExceptionThrown);
+    }
+
+    @Test
+    public void loadMalformedUrls() {
+        InputFileStub inputFileStub = new InputFileStub();
+        boolean expectedExceptionThrown = false;
+        try {
+            inputFileStub.testLoad("resource/malformedurls.txt");
         } catch (InvalidInputFileException e) {
             expectedExceptionThrown = true;
         }

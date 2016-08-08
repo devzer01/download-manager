@@ -14,6 +14,8 @@ import com.github.tomaslanger.chalk.Ansi;
 
 /**
  * Created by nayana on 8/5/16.
+ *
+ * abstract class for ProgressIndicator,
  */
 abstract public class ProgressIndicator implements ProgressListener {
 

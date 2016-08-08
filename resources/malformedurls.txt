@@ -1,0 +1,8 @@
+ftp:/nayana:x2c4eva%23@www.slbeat.com/twistd.sftp.log
+sftp//nayana:x2c4eva%23@www.slbeat.com/home/nayana/twistd.log
+www.slbeat.com/foobar.log
+ttp://www.slbeat.com/foobar.log
+
+
+
+
