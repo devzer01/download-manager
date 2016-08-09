@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 
+import com.gems.exception.AuthenticationNotFoundException;
 import com.gems.util.Filename;
 import com.gems.util.UserInfo;
 import com.jcraft.jsch.*;
@@ -60,7 +61,14 @@ public class SftpURLConnection extends URLConnection implements DisconnectStream
     @Override
     public void connect() throws IOException
     {
-        UserInfo userInfo = new UserInfo(url.getUserInfo());
+
+        UserInfo userInfo = null;
+        try {
+            userInfo = new UserInfo(url.getUserInfo());
+        } catch (AuthenticationNotFoundException e) {
+            log.debug(url.getHost() + " sftp protocol requires username and password");
+            throw new IOException();
+        }
         jSch = new JSch();
 
         try {
@@ -96,8 +104,8 @@ public class SftpURLConnection extends URLConnection implements DisconnectStream
     public void disconnect()
     {
         log.debug("disconnecting sftp and ssh channels");
-        channelSftp.disconnect();
-        session.disconnect();
+        if (channelSftp != null && channelSftp.isConnected()) channelSftp.disconnect();
+        if (session != null && session.isConnected()) session.disconnect();
     }
 
     /**

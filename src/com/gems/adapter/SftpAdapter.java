@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import com.gems.model.Status;
 import com.gems.model.Task;
 import com.gems.protocol.sftp.DisconnectStream;
 import com.gems.protocol.sftp.SftpURLConnection;

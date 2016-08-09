@@ -2,6 +2,7 @@ ftp://nayana:x2c4eva%23@www.slbeat.com/twistd.sftp.log
 sftp://nayana:x2c4eva%23@www.slbeat.com/home/nayana/twistd.log
 http://www.slbeat.com/foobar.log
 http://www.slbeat.com/foobar.log
+sftp://www.slbeat.com/home/nayana/twistd_fail_file.log
 
 
 
